@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Béné — Guide testeuse</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --cream:     #F5EFE2;
+    --paper:     #FFFFFF;
+    --bone:      #FAF7EE;
+    --ink:       #1A1A1A;
+    --ink-soft:  #5C5751;
+    --ink-mute:  #9C968B;
+    --line:      #E5DFD0;
+    --pink:      #EC1E76;
+    --pink-soft: #FDE7EF;
+    --warn:      #C97A18;
+    --warn-soft: #FBEDD3;
+    --alert:     #B91C1C;
+    --alert-soft:#FCE5E5;
+    --zen:       #057855;
+    --zen-soft:  #DDF2E8;
+    --black:     #0F0F0F;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  /* Si quelqu'un imprime : ne jamais couper un bloc en deux */
+  @media print {
+    .point, .step, .question, .questions-box, .form-info, .merci, .links-block {
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+    .section { page-break-inside: auto; }
+    h1, h2 { page-break-after: avoid; break-after: avoid; }
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    color: var(--ink);
+    background: var(--paper);
+    line-height: 1.6;
+    font-size: 11pt;
+  }
+
+  .banner {
+    width: 100%;
+    display: block;
+  }
+
+  .container {
+    max-width: 740px;
+    margin: 0 auto;
+    padding: 36px 28px 80px 28px;
+  }
+
+  a {
+    color: var(--ink);
+    text-decoration: underline;
+    text-decoration-color: var(--pink);
+    text-decoration-thickness: 1.5pt;
+    text-underline-offset: 3pt;
+    font-weight: 500;
+  }
+  a:hover { color: var(--pink); }
+
+  /* ==================== HERO ==================== */
+  .hero {
+    text-align: center;
+    padding: 24px 0 32px 0;
+  }
+
+  .hero-eyebrow {
+    font-size: 11px;
+    color: var(--pink);
+    letter-spacing: 4pt;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 18px;
+  }
+
+  .hero-title {
+    font-size: 38px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -1pt;
+    line-height: 1.05;
+    margin-bottom: 14px;
+  }
+
+  .hero-tagline {
+    font-size: 17px;
+    color: var(--ink-soft);
+    font-style: italic;
+    font-family: Georgia, "Times New Roman", serif;
+  }
+
+  .hero-intro {
+    font-size: 16px;
+    color: var(--ink-soft);
+    max-width: 560px;
+    margin: 28px auto 0 auto;
+    line-height: 1.7;
+  }
+  .hero-intro strong { color: var(--ink); }
+
+  /* ==================== LIENS — bloc noir ==================== */
+  .links-block {
+    background: var(--black);
+    color: white;
+    border-radius: 8px;
+    padding: 22px 26px;
+    margin: 36px 0;
+  }
+
+  .links-block-label {
+    font-size: 11px;
+    color: #888378;
+    letter-spacing: 2.5pt;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 16px;
+    text-align: center;
+  }
+
+  .link-row {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    padding: 14px 0;
+    border-bottom: 1px solid #2A2A2A;
+  }
+
+  .link-row:last-child { border-bottom: none; }
+
+  .link-label {
+    flex-shrink: 0;
+    width: 130px;
+    font-size: 13px;
+    color: #C9C2B3;
+    font-weight: 600;
+  }
+
+  .link-url {
+    flex: 1;
+    font-family: "SF Mono", "Consolas", "Courier New", monospace;
+    font-size: 13px;
+    word-break: break-all;
+    line-height: 1.45;
+  }
+
+  .link-url a {
+    color: white !important;
+    text-decoration-color: var(--pink);
+    text-decoration-thickness: 1.5pt;
+  }
+
+  .link-url a:hover { color: var(--pink) !important; }
+
+  /* ==================== SECTION ==================== */
+  .section {
+    margin-top: 56px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+  }
+
+  .section-eyebrow {
+    font-size: 11px;
+    color: var(--pink);
+    letter-spacing: 3pt;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .section-title {
+    font-size: 28px;
+    color: var(--ink);
+    font-weight: 700;
+    letter-spacing: -0.4pt;
+    line-height: 1.15;
+    margin-bottom: 6px;
+  }
+
+  .section-subtitle {
+    font-size: 15px;
+    color: var(--ink-soft);
+    font-style: italic;
+    font-family: Georgia, serif;
+    margin-bottom: 22px;
+  }
+
+  /* ==================== POINTS ==================== */
+  .point {
+    display: flex;
+    gap: 16px;
+    padding: 16px 18px;
+    border-radius: 6px;
+    background: var(--bone);
+    border-left: 3px solid var(--ink);
+    margin-bottom: 12px;
+  }
+
+  .point.warning { background: var(--warn-soft); border-left-color: var(--warn); }
+  .point.alert   { background: var(--alert-soft); border-left-color: var(--alert); }
+  .point.zen     { background: var(--zen-soft); border-left-color: var(--zen); }
+
+  .point-num {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--ink);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 13px;
+  }
+
+  .point.warning .point-num { background: var(--warn); }
+  .point.alert .point-num   { background: var(--alert); }
+  .point.zen .point-num     { background: var(--zen); }
+
+  .point-content { flex: 1; min-width: 0; }
+
+  .point-title {
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+
+  .point-body {
+    font-size: 14px;
+    color: var(--ink-soft);
+  }
+  .point-body strong { color: var(--ink); }
+
+  .point-body ul {
+    margin: 8px 0 0 0;
+    list-style: none;
+  }
+
+  .point-body ul li {
+    margin-bottom: 4px;
+    padding-left: 18px;
+    position: relative;
+    font-size: 13.5px;
+  }
+
+  .point-body ul li::before {
+    content: "—";
+    color: var(--pink);
+    position: absolute;
+    left: 0;
+    font-weight: 700;
+  }
+
+  /* ==================== STEPS ==================== */
+  .step {
+    padding: 20px 22px;
+    border-radius: 6px;
+    background: var(--bone);
+    border-left: 3px solid var(--pink);
+    margin-bottom: 14px;
+  }
+
+  .step-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .step-title-wrap {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+  }
+
+  .step-num {
+    font-family: Georgia, serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--pink);
+    line-height: 1;
+  }
+
+  .step-title {
+    font-weight: 700;
+    color: var(--ink);
+    font-size: 16px;
+  }
+
+  .step-duration {
+    font-size: 11px;
+    color: var(--ink-mute);
+    background: var(--paper);
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-weight: 600;
+    border: 1px solid var(--line);
+  }
+
+  .step-body {
+    font-size: 14px;
+    color: var(--ink-soft);
+    line-height: 1.6;
+  }
+  .step-body strong { color: var(--ink); }
+
+  .step-body ol {
+    margin: 6px 0 0 0;
+    counter-reset: substep;
+    list-style: none;
+  }
+
+  .step-body ol li {
+    counter-increment: substep;
+    margin-bottom: 5px;
+    padding-left: 22px;
+    position: relative;
+  }
+
+  .step-body ol li::before {
+    content: counter(substep) ".";
+    position: absolute;
+    left: 0;
+    top: 0;
+    color: var(--pink);
+    font-weight: 700;
+    font-size: 13.5px;
+  }
+
+  /* ==================== QUESTIONS ==================== */
+  .questions-box {
+    background: var(--bone);
+    border-radius: 6px;
+    padding: 24px 22px;
+    margin-bottom: 22px;
+  }
+
+  .questions-box h3 {
+    color: var(--ink);
+    font-size: 14px;
+    margin-bottom: 14px;
+    font-weight: 600;
+  }
+
+  .question {
+    background: var(--paper);
+    padding: 14px 18px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    font-size: 14.5px;
+    color: var(--ink);
+    border: 1px solid var(--line);
+    display: flex;
+    gap: 14px;
+  }
+
+  .question:last-child { margin-bottom: 0; }
+
+  .question-num {
+    color: var(--pink);
+    font-weight: 700;
+    font-family: Georgia, serif;
+    font-size: 18px;
+    line-height: 1;
+  }
+  .question strong { color: var(--ink); font-weight: 600; }
+
+  /* ==================== FORM INFO ==================== */
+  .form-info {
+    padding: 18px 22px;
+    background: var(--warn-soft);
+    border-radius: 6px;
+    border-left: 3px solid var(--warn);
+    font-size: 14px;
+    color: var(--ink-soft);
+    margin-bottom: 32px;
+  }
+  .form-info strong { color: var(--ink); }
+
+  /* ==================== MERCI ==================== */
+  .merci {
+    text-align: center;
+    padding: 36px 0 12px 0;
+    margin-top: 32px;
+    border-top: 1px solid var(--line);
+  }
+
+  .merci-big {
+    font-size: 22px;
+    color: var(--ink);
+    font-weight: 700;
+    margin-bottom: 10px;
+    letter-spacing: -0.3pt;
+  }
+
+  .merci-text {
+    color: var(--ink-soft);
+    font-size: 15px;
+    max-width: 460px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  .merci-signature {
+    font-family: Georgia, serif;
+    font-style: italic;
+    font-size: 18px;
+    color: var(--pink);
+    margin-top: 20px;
+  }
+
+  .footer {
+    text-align: center;
+    padding: 24px 0;
+    color: var(--ink-mute);
+    font-size: 12px;
+    letter-spacing: 1pt;
+  }
+
+  .footer .pink-dot { color: var(--pink); }
+
+  /* ==================== RESPONSIVE ==================== */
+  @media (max-width: 600px) {
+    .container { padding: 24px 18px 60px 18px; }
+    .hero-title { font-size: 30px; }
+    .section-title { font-size: 24px; }
+    .link-row { flex-direction: column; gap: 4px; }
+    .link-label { width: auto; }
+    .step-header { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<img src="Visuels/Haut%20de%20page.png" alt="Béné · Bilan, Évaluation, Note, Édition" class="banner">
+
+<div class="container">
+
+  <!-- ============= HERO ============= -->
+  <section class="hero">
+    <div class="hero-eyebrow">Guide testeuse · v1 · mai 2026</div>
+    <h1 class="hero-title">Tu fais partie<br>des premières.</h1>
+    <div class="hero-tagline">Merci.</div>
+
+    <p class="hero-intro">
+      Tu vas tester la <strong>v1 de Béné</strong>, mon proto d'application bilan ergothérapie,
+      pensé autour de la <strong>vie quotidienne</strong>, du <strong>suivi longitudinal</strong>
+      et de la méthodologie pédagogique du Cabinet Libéré.
+    </p>
+  </section>
+
+  <!-- ============= LIENS ============= -->
+  <div class="links-block">
+    <div class="links-block-label">Liens à garder sous la main</div>
+
+    <div class="link-row">
+      <span class="link-label">L'application</span>
+      <span class="link-url">
+        <a href="https://bene-peach.vercel.app/" target="_blank">https://bene-peach.vercel.app/</a>
+      </span>
+    </div>
+
+    <div class="link-row">
+      <span class="link-label">Formulaire feedback</span>
+      <span class="link-url">
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSfkku73OcR3qJNbwocOlact9erm9Y_EI_1-RFYACfdtzp9Z0Q/viewform?usp=dialog" target="_blank">cliquer pour ouvrir le formulaire Google</a>
+      </span>
+    </div>
+  </div>
+
+
+  <!-- ============= CADRE DU TEST ============= -->
+  <section class="section">
+    <div class="section-eyebrow">01 · Avant de commencer</div>
+    <h2 class="section-title">Le cadre du test</h2>
+    <div class="section-subtitle">À lire en premier — c'est important pour toi autant que pour moi.</div>
+
+    <div class="point">
+      <div class="point-num">1</div>
+      <div class="point-content">
+        <div class="point-title">C'est un prototype, pas un produit</div>
+        <div class="point-body">
+          Tout est gratuit, mais parfois bancal. Tu vas trouver des bugs, des trucs moches, des incohérences.
+          <strong>C'est exactement pour ça que je te demande de tester.</strong> Plus tu trouves, plus tu m'aides.
+        </div>
+      </div>
+    </div>
+
+    <div class="point alert">
+      <div class="point-num">2</div>
+      <div class="point-content">
+        <div class="point-title">Patient fictif uniquement, jamais de vraies données</div>
+        <div class="point-body">
+          Crée un personnage type <strong>Léo Test, 8 ans, dyspraxie suspectée, CE2, droitier</strong>.
+          Invente-lui un dossier complet — anamnèse, scores, observations — mais aucune information de patient réel.
+          <ul>
+            <li>Les données sont stockées dans ton navigateur, sans chiffrement.</li>
+            <li>Aucun backup : si tu vides ton cache, tout disparaît.</li>
+            <li>L'application n'est pas encore hébergée aux normes médicales (HDS).</li>
+            <li>Tester en fictif, c'est <strong>te protéger</strong>.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="point warning">
+      <div class="point-num">3</div>
+      <div class="point-content">
+        <div class="point-title">Reste sur le mode IA "templates locaux"</div>
+        <div class="point-body">
+          Le mode par défaut tourne 100 % sur ton ordinateur, rien ne sort.
+          <strong>Ne coche pas l'option "IA Claude API"</strong> qui enverrait du contexte aux serveurs Anthropic aux États-Unis.
+        </div>
+      </div>
+    </div>
+
+    <div class="point zen">
+      <div class="point-num">4</div>
+      <div class="point-content">
+        <div class="point-title">Tu ne casseras rien</div>
+        <div class="point-body">
+          Si quelque chose plante, recharge la page. Pour repartir de zéro :
+          <em>Paramètres &gt; Effacer toutes les données</em>. Joue librement, clique partout, tente des trucs improbables.
+        </div>
+      </div>
+    </div>
+
+    <div class="point">
+      <div class="point-num">5</div>
+      <div class="point-content">
+        <div class="point-title">Confidentialité de ton feedback</div>
+        <div class="point-body">
+          Tes réponses au formulaire restent entre nous. Aucun retour ne sera partagé nominativement sans ton accord explicite.
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============= LE PARCOURS ============= -->
+  <section class="section">
+    <div class="section-eyebrow">02 · Le parcours</div>
+    <h2 class="section-title">4 étapes, 30 minutes</h2>
+    <div class="section-subtitle">Prends ton temps, ou speede, comme tu préfères.</div>
+
+    <div class="step">
+      <div class="step-header">
+        <div class="step-title-wrap">
+          <span class="step-num">01</span>
+          <span class="step-title">Premier contact</span>
+        </div>
+        <span class="step-duration">5 min</span>
+      </div>
+      <div class="step-body">
+        <ol>
+          <li>Ouvre <a href="https://bene-peach.vercel.app/" target="_blank">bene-peach.vercel.app</a> dans Chrome ou Firefox.</li>
+          <li>Regarde l'écran d'accueil sans rien cliquer pendant 30 secondes. Ressens.</li>
+          <li>Note ta première impression : claire ? confuse ? jolie ? moche ?</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-header">
+        <div class="step-title-wrap">
+          <span class="step-num">02</span>
+          <span class="step-title">Création d'un patient fictif</span>
+        </div>
+        <span class="step-duration">5 min</span>
+      </div>
+      <div class="step-body">
+        <ol>
+          <li>Va dans <strong>Patients</strong>, ajoute un patient.</li>
+          <li><em>Léo Test, né le 12/03/2018, garçon, CP, droitier, motif "suspicion de dyspraxie"</em>.</li>
+          <li>Combien de clics ? Champs faciles à trouver ? Il manque quelque chose ?</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-header">
+        <div class="step-title-wrap">
+          <span class="step-num">03</span>
+          <span class="step-title">Démarre un bilan</span>
+        </div>
+        <span class="step-duration">15 min</span>
+      </div>
+      <div class="step-body">
+        <ol>
+          <li>Sur la fiche de Léo, clique sur <strong>Nouveau bilan</strong>.</li>
+          <li>Remplis l'anamnèse rapidement (3-4 phrases).</li>
+          <li>Ajoute <strong>un test</strong> (Figure de Rey ou MABC-2).</li>
+          <li>Renseigne <strong>2 ou 3 observations cliniques</strong>.</li>
+          <li><strong>Impact dans la vie quotidienne</strong> : coche 2-3 domaines.</li>
+          <li>Demande un <strong>brouillon de conclusion par l'IA</strong> (mode local).</li>
+          <li>Génère le <strong>compte-rendu Word ou PDF</strong>.</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-header">
+        <div class="step-title-wrap">
+          <span class="step-num">04</span>
+          <span class="step-title">Une fonctionnalité de ton choix</span>
+        </div>
+        <span class="step-duration">5 min</span>
+      </div>
+      <div class="step-body">
+        Une <strong>ESS</strong>, un <strong>récap MDPH</strong>, ou une <strong>annexe école</strong> — au choix selon ce qui t'intéresse le plus dans ton workflow actuel. Note : combien de temps ça t'a pris ? Tu as buté sur quoi ?
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============= QUESTIONS CLÉS ============= -->
+  <section class="section">
+    <div class="section-eyebrow">03 · L'essentiel</div>
+    <h2 class="section-title">3 questions qui comptent</h2>
+    <div class="section-subtitle">Si tu n'as le temps que pour 3 réponses, ce sont celles-là.</div>
+
+    <div class="questions-box">
+      <h3>Au-delà du formulaire complet :</h3>
+
+      <div class="question">
+        <span class="question-num">1.</span>
+        <span>Qu'est-ce qui est <strong>mieux</strong> que ta méthode ou ton outil actuel ?</span>
+      </div>
+
+      <div class="question">
+        <span class="question-num">2.</span>
+        <span>Qu'est-ce qui est <strong>moins bien</strong> ?</span>
+      </div>
+
+      <div class="question">
+        <span class="question-num">3.</span>
+        <span>Si je devais améliorer <strong>une seule chose</strong> dans la prochaine version, ce serait quoi ?</span>
+      </div>
+    </div>
+
+    <div class="form-info">
+      <strong>Le formulaire :</strong> 5 minutes pour le remplir. Tu le retrouves ici 👉
+      <a href="https://docs.google.com/forms/d/e/1FAIpQLSfkku73OcR3qJNbwocOlact9erm9Y_EI_1-RFYACfdtzp9Z0Q/viewform?usp=dialog" target="_blank">cliquer pour ouvrir</a>.
+      Date limite souhaitée : <strong>dimanche 17 mai</strong>.
+    </div>
+  </section>
+
+
+  <!-- ============= MERCI ============= -->
+  <div class="merci">
+    <div class="merci-big">Merci infiniment.</div>
+    <div class="merci-text">
+      Ton retour vaut de l'or à ce stade. C'est grâce à toi que la v2 sera vraiment au point.
+    </div>
+    <div class="merci-signature">— Clem</div>
+  </div>
+
+  <div class="footer">
+    Préparé pour toi par <strong>Clémentine Ladreyt</strong> · Le Cabinet Libéré <span class="pink-dot">·</span>
+  </div>
+
+</div>
+
+</body>
+</html>
